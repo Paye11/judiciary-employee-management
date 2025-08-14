@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circuit Court Dashboard - Judiciary Staff Management System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobile-overlay"></div>
+    
+    <div class="dashboard">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-gavel"></i>
+                <h2>Judiciary SMS</h2>
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-item active" data-page="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item" data-page="staff-management">
+                    <i class="fas fa-users"></i>
+                    <span>Staff Management</span>
+                </div>
+                <div class="menu-item" data-page="magisterial-courts">
+                    <i class="fas fa-building"></i>
+                    <span>Magisterial Courts</span>
+                </div>
+                <div class="menu-item" data-page="total-staff">
+                    <i class="fas fa-users"></i>
+                    <span>View Total Staff</span>
+                </div>
+                <div class="menu-item" data-page="active-staff">
+                    <i class="fas fa-user-check"></i>
+                    <span>Active Staff</span>
+                </div>
+                <div class="menu-item" data-page="retired-staff">
+                    <i class="fas fa-user-clock"></i>
+                    <span>Retired Staff</span>
+                </div>
+                <div class="menu-item" data-page="dismissed-staff">
+                    <i class="fas fa-user-times"></i>
+                    <span>Dismissed Staff</span>
+                </div>
+                <div class="menu-item" data-page="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+                <div class="menu-item" id="logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Circuit Court Dashboard</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary refresh-btn" id="refresh-btn" title="Refresh Page Data">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Refresh</span>
+                    </button>
+                    <div class="user-info">
+                        <div class="dropdown">
+                            <span id="currentUserName">Circuit Court</span>
+                            <i class="fas fa-chevron-down"></i>
+                            <div class="dropdown-content">
+                                <a href="#" id="profileLink">Profile</a>
+                                <a href="#" id="logoutLink">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Overview -->
+            <div class="page" id="dashboard-page">
+                <div class="cards">
+                    <div class="card" id="total-magisterial-courts">
+                        <i class="fas fa-building"></i>
+                        <h3>Magisterial Courts</h3>
+                        <p id="magisterial-count">0</p>
+                    </div>
+                    <div class="card" id="total-staff">
+                        <i class="fas fa-users"></i>
+                        <h3>Total Staff</h3>
+                        <p id="staff-count">0</p>
+                    </div>
+                    <div class="card" id="active-staff-card">
+                        <i class="fas fa-user-check"></i>
+                        <h3>Active Staff</h3>
+                        <p id="active-count">0</p>
+                    </div>
+                    <div class="card" id="retired-staff-card">
+                        <i class="fas fa-user-clock"></i>
+                        <h3>Retired Staff</h3>
+                        <p id="retired-count">0</p>
+                    </div>
+                    <div class="card" id="dismissed-staff-card">
+                        <i class="fas fa-user-times"></i>
+                        <h3>Dismissed Staff</h3>
+                        <p id="dismissed-count">0</p>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- Staff Management Page -->
+            <div class="page" id="staff-management-page" style="display: none;">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h2>Staff Management</h2>
+                        <div class="table-actions">
+                            <button class="btn btn-primary" id="add-staff-btn">
+                                <i class="fas fa-plus"></i> Add Staff
+                            </button>
+                            <div class="filter-group">
+                                <label for="staff-filter-select">Filter by Court:</label>
+                                <select id="staff-filter-select" class="form-select">
+                                    <option value="all">All Staff</option>
+                                    <option value="circuit">Circuit Court Staff</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-success" id="export-staff-btn">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                            <button class="btn btn-primary" id="print-staff-btn">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                        </div>
+                    </div>
+                    <table id="staff-management-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>Court</th>
+                                <th>Contact</th>
+                                <th>Education</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staff-management-body">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Magisterial Courts Page -->
+            <div class="page" id="magisterial-courts-page" style="display: none;">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h2>Magisterial Courts</h2>
+                        <div class="table-actions">
+                            <button class="btn btn-primary" id="add-magisterial-court-btn">
+                                <i class="fas fa-plus"></i> Add Magisterial Court
+                            </button>
+                            <button class="btn btn-success" id="export-magisterial-courts-btn">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                    <div class="court-cards" id="magisterial-courts-container">
+                        <!-- Magisterial court cards will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Staff Page -->
+            <div class="page" id="total-staff-page" style="display: none;">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h2>Total Staff - All Judiciary Employees</h2>
+                        <div class="table-actions">
+                            <button class="btn btn-success" id="export-total-staff-btn">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                            <button class="btn btn-primary" id="print-total-staff-btn">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                        </div>
+                    </div>
+                    <div class="filter-controls">
+                        <div class="filter-group">
+                            <label for="court-type-filter">Court Type:</label>
+                            <select id="court-type-filter">
+                                <option value="all">All Courts</option>
+                                <option value="circuit">Circuit Courts</option>
+                                <option value="magisterial">Magisterial Courts</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="court-filter">Specific Court:</label>
+                            <select id="court-filter">
+                                <option value="all">All Courts</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <button class="btn btn-secondary" id="clear-filters-btn">
+                                <i class="fas fa-times"></i> Clear Filters
+                            </button>
+                        </div>
+                    </div>
+                    <table id="total-staff-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>Court</th>
+                                <th>Contact</th>
+                                <th>Education</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="total-staff-body">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Active Staff Page -->
+            <div class="page" id="active-staff-page" style="display: none;">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h2>Active Staff</h2>
+                        <div class="table-actions">
+                            <button class="btn btn-success" id="export-active-staff-btn">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                            <button class="btn btn-primary" id="print-active-staff-btn">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                        </div>
+                    </div>
+                    <table id="active-staff-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>Court</th>
+                                <th>Contact</th>
+                                <th>Education</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="active-staff-body">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Retired Staff Page -->
+            <div class="page" id="retired-staff-page" style="display: none;">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h2>Retired Staff</h2>
+                        <div class="table-actions">
+                            <button class="btn btn-success" id="export-retired-staff-btn">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                            <button class="btn btn-primary" id="print-retired-staff-btn">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                        </div>
+                    </div>
+                    <table id="retired-staff-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>Court</th>
+                                <th>Contact</th>
+                                <th>Education</th>
+                                <th>Retirement Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="retired-staff-body">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Dismissed Staff Page -->
+            <div class="page" id="dismissed-staff-page" style="display: none;">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h2>Dismissed Staff</h2>
+                        <div class="table-actions">
+                            <button class="btn btn-success" id="export-dismissed-staff-btn">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                            <button class="btn btn-primary" id="print-dismissed-staff-btn">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                        </div>
+                    </div>
+                    <table id="dismissed-staff-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>Court</th>
+                                <th>Contact</th>
+                                <th>Education</th>
+                                <th>Dismissal Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dismissed-staff-body">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div class="page" id="settings-page" style="display: none;">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h2>Account Settings</h2>
+                    </div>
+                    <form id="settings-form">
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="court-username">Username</label>
+                                <input type="text" id="court-username" name="court-username" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="court-name">Court Name</label>
+                                <input type="text" id="court-name" name="court-name" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="court-password">New Password</label>
+                                <input type="password" id="court-password" name="court-password">
+                            </div>
+                            <div class="input-group">
+                                <label for="court-confirm-password">Confirm Password</label>
+                                <input type="password" id="court-confirm-password" name="court-confirm-password">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Staff Modal -->
+    <div id="add-staff-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-header">
+                <h2>Add New Staff</h2>
+            </div>
+            <form id="add-staff-form">
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="staff-name">Full Name</label>
+                        <input type="text" id="staff-name" name="staff-name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="staff-position">Position</label>
+                        <input type="text" id="staff-position" name="staff-position" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="staff-court-type">Court Type</label>
+                        <select id="staff-court-type" name="staff-court-type" required>
+                            <option value="circuit">Circuit Court</option>
+                            <option value="magisterial">Magisterial Court</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="staff-court">Court</label>
+                        <select id="staff-court" name="staff-court" required>
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="staff-contact">Contact</label>
+                        <input type="text" id="staff-contact" name="staff-contact" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="staff-education">Education</label>
+                        <input type="text" id="staff-education" name="staff-education" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="staff-status">Employment Status</label>
+                        <select id="staff-status" name="staff-status" required>
+                            <option value="active">Active</option>
+                            <option value="on_leave">On Leave</option>
+                            <option value="retired">Retired</option>
+                            <option value="dismissed">Dismissed</option>
+                        </select>
+                    </div>
+                    <div class="input-group" id="status-date-container" style="display: none;">
+                        <label for="status-date" id="status-date-label">Date</label>
+                        <input type="date" id="status-date" name="status-date">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <button type="submit" class="btn btn-primary">Add Staff</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Magisterial Court Modal -->
+    <div id="add-magisterial-court-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-header">
+                <h2>Add New Magisterial Court</h2>
+            </div>
+            <form id="add-magisterial-court-form">
+                <div class="input-group">
+                    <label for="magisterial-court-name">Magisterial Court Name</label>
+                    <input type="text" id="magisterial-court-name" name="magisterial-court-name" required>
+                </div>
+                <div class="input-group">
+                    <label for="magisterial-court-username">Username</label>
+                    <input type="text" id="magisterial-court-username" name="magisterial-court-username" required>
+                </div>
+                <div class="input-group">
+                    <label for="magisterial-court-password">Password</label>
+                    <input type="password" id="magisterial-court-password" name="magisterial-court-password" required>
+                </div>
+                <div class="input-group">
+                    <label for="magisterial-court-confirm-password">Confirm Password</label>
+                    <input type="password" id="magisterial-court-confirm-password" name="magisterial-court-confirm-password" required>
+                </div>
+                <div class="input-group">
+                    <button type="submit" class="btn btn-primary">Create Magisterial Court</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Staff Modal -->
+    <div id="edit-staff-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-header">
+                <h2>Edit Staff</h2>
+            </div>
+            <form id="edit-staff-form">
+                <input type="hidden" id="edit-staff-id">
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="edit-staff-name">Full Name</label>
+                        <input type="text" id="edit-staff-name" name="edit-staff-name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="edit-staff-position">Position</label>
+                        <input type="text" id="edit-staff-position" name="edit-staff-position" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="edit-staff-court-type">Court Type</label>
+                        <select id="edit-staff-court-type" name="edit-staff-court-type" required>
+                            <option value="circuit">Circuit Court</option>
+                            <option value="magisterial">Magisterial Court</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="edit-staff-court">Court</label>
+                        <select id="edit-staff-court" name="edit-staff-court" required>
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="edit-staff-contact">Contact</label>
+                        <input type="text" id="edit-staff-contact" name="edit-staff-contact" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="edit-staff-education">Education</label>
+                        <input type="text" id="edit-staff-education" name="edit-staff-education" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="edit-staff-status">Employment Status</label>
+                        <select id="edit-staff-status" name="edit-staff-status" required>
+                            <option value="active">Active</option>
+                            <option value="on_leave">On Leave</option>
+                            <option value="retired">Retired</option>
+                            <option value="dismissed">Dismissed</option>
+                        </select>
+                    </div>
+                    <div class="input-group" id="edit-status-date-container" style="display: none;">
+                        <label for="edit-status-date" id="edit-status-date-label">Date</label>
+                        <input type="date" id="edit-status-date" name="edit-status-date">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <button type="submit" class="btn btn-primary">Update Staff</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Export Format Selection Modal -->
+    <div id="export-format-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-header">
+                <h2>Select Export Format</h2>
+            </div>
+            <div class="export-format-options">
+                <button class="export-option-btn" data-format="excel">
+                    <i class="fas fa-file-excel"></i>
+                    <span>Excel (.xlsx)</span>
+                </button>
+                <button class="export-option-btn" data-format="word">
+                    <i class="fas fa-file-word"></i>
+                    <span>MS Word (.docx)</span>
+                </button>
+                <button class="export-option-btn" data-format="pdf">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>PDF (.pdf)</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/circuit-dashboard.js"></script>
+</body>
+</html>

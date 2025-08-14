@@ -1,0 +1,26 @@
+{
+  "name": "judiciary-staff-management-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for Judiciary Staff Management System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "backend": "cd backend && npm start",
+    "dev:full": "concurrently \"npm run backend\" \"npm start\""
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  },
+  "keywords": [
+    "judiciary",
+    "staff-management",
+    "frontend",
+    "express"
+  ],
+  "author": "Judiciary Staff Management Team",
+  "license": "MIT"
+}

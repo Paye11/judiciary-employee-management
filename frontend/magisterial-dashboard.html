@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magisterial Court Dashboard - Judiciary Staff Management System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobile-overlay"></div>
+    
+    <div class="dashboard">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                <i class="fas fa-gavel"></i>
+                <h2>Judiciary</h2>
+            </div>
+            <ul class="menu">
+                <li class="menu-item active" data-page="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="menu-item" data-page="staff-management">
+                    <i class="fas fa-users"></i>
+                    <span>Staff Management</span>
+                </li>
+                <li class="menu-item" data-page="active-staff">
+                    <i class="fas fa-user-check"></i>
+                    <span>Active Staff</span>
+                </li>
+                <li class="menu-item" data-page="retired-staff">
+                    <i class="fas fa-user-clock"></i>
+                    <span>Retired Staff</span>
+                </li>
+                <li class="menu-item" data-page="dismissed-staff">
+                    <i class="fas fa-user-times"></i>
+                    <span>Dismissed Staff</span>
+                </li>
+                <li class="menu-item" data-page="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </li>
+                <li class="menu-item" id="logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                <button class="btn btn-secondary refresh-btn" id="refresh-btn" title="Refresh Page Data">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Refresh</span>
+                </button>
+                <div class="user-info">
+                    <div class="notification">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="user">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="currentUserName">Magisterial Court</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Overview Page -->
+            <div class="page" id="dashboard-page">
+                <h2>Dashboard Overview</h2>
+                <div class="cards">
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="number" id="staff-count">0</div>
+                            <div class="card-name">Total Staff</div>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="number" id="active-count">0</div>
+                            <div class="card-name">Active Staff</div>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="number" id="retired-count">0</div>
+                            <div class="card-name">Retired Staff</div>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-user-clock"></i>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="number" id="dismissed-count">0</div>
+                            <div class="card-name">Dismissed Staff</div>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-user-times"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tables">
+                    <div class="recent-updates">
+                        <div class="heading">
+                            <h3>Recent Updates</h3>
+                            <button class="btn btn-primary" id="print-staff-btn">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                            <button class="btn btn-success" id="export-staff-btn">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Position</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-updates-body">
+                                <!-- Recent updates will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Staff Management Page -->
+            <div class="page" id="staff-management-page" style="display: none;">
+                <div class="heading">
+                    <h2>Staff Management</h2>
+                    <button class="btn btn-primary" id="add-staff-btn">
+                        <i class="fas fa-plus"></i> Add Staff
+                    </button>
+                </div>
+                <div class="tables">
+                    <div class="staff-table">
+                        <div class="heading">
+                            <h3>All Staff</h3>
+                            <button class="btn btn-primary" id="print-all-staff-btn">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                            <button class="btn btn-success" id="export-all-staff-btn">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Position</th>
+                                    <th>Contact</th>
+                                    <th>Education</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staff-management-body">
+                                <!-- Staff data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Staff Page -->
+            <div class="page" id="active-staff-page" style="display: none;">
+                <div class="heading">
+                    <h2>Active Staff</h2>
+                </div>
+                <div class="tables">
+                    <div class="staff-table">
+                        <div class="heading">
+                            <h3>Active Staff List</h3>
+                            <button class="btn btn-primary" id="print-active-staff-btn">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                            <button class="btn btn-success" id="export-active-staff-btn">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Position</th>
+                                    <th>Contact</th>
+                                    <th>Education</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="active-staff-body">
+                                <!-- Active staff data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Retired Staff Page -->
+            <div class="page" id="retired-staff-page" style="display: none;">
+                <div class="heading">
+                    <h2>Retired Staff</h2>
+                </div>
+                <div class="tables">
+                    <div class="staff-table">
+                        <div class="heading">
+                            <h3>Retired Staff List</h3>
+                            <button class="btn btn-primary" id="print-retired-staff-btn">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                            <button class="btn btn-success" id="export-retired-staff-btn">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Position</th>
+                                    <th>Contact</th>
+                                    <th>Education</th>
+                                    <th>Retirement Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="retired-staff-body">
+                                <!-- Retired staff data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dismissed Staff Page -->
+            <div class="page" id="dismissed-staff-page" style="display: none;">
+                <div class="heading">
+                    <h2>Dismissed Staff</h2>
+                </div>
+                <div class="tables">
+                    <div class="staff-table">
+                        <div class="heading">
+                            <h3>Dismissed Staff List</h3>
+                            <button class="btn btn-primary" id="print-dismissed-staff-btn">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                            <button class="btn btn-success" id="export-dismissed-staff-btn">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Position</th>
+                                    <th>Contact</th>
+                                    <th>Education</th>
+                                    <th>Dismissal Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dismissed-staff-body">
+                                <!-- Dismissed staff data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div class="page" id="settings-page" style="display: none;">
+                <div class="heading">
+                    <h2>Settings</h2>
+                </div>
+                <div class="settings-container">
+                    <div class="settings-card">
+                        <h3>Court Settings</h3>
+                        <form id="settings-form">
+                            <div class="form-group">
+                                <label for="court-username">Username</label>
+                                <input type="text" id="court-username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="court-name">Court Name</label>
+                                <input type="text" id="court-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="court-password">New Password (leave blank to keep current)</label>
+                                <input type="password" id="court-password">
+                            </div>
+                            <div class="form-group">
+                                <label for="court-confirm-password">Confirm New Password</label>
+                                <input type="password" id="court-confirm-password">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Staff Modal -->
+    <div class="modal" id="add-staff-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Staff</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="add-staff-form">
+                    <div class="form-group">
+                        <label for="staff-name">Full Name</label>
+                        <input type="text" id="staff-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="staff-position">Position</label>
+                        <input type="text" id="staff-position" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="staff-contact">Contact</label>
+                        <input type="text" id="staff-contact" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="staff-education">Education</label>
+                        <input type="text" id="staff-education" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="staff-status">Employment Status</label>
+                        <select id="staff-status" name="staff-status" required>
+                            <option value="active">Active</option>
+                            <option value="on_leave">On Leave</option>
+                            <option value="retired">Retired</option>
+                            <option value="dismissed">Dismissed</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="status-date-container" style="display: none;">
+                        <label for="status-date" id="status-date-label">Date</label>
+                        <input type="date" id="status-date">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Staff</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Staff Modal -->
+    <div class="modal" id="edit-staff-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Staff</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="edit-staff-form">
+                    <input type="hidden" id="edit-staff-id">
+                    <div class="form-group">
+                        <label for="edit-staff-name">Full Name</label>
+                        <input type="text" id="edit-staff-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-staff-position">Position</label>
+                        <input type="text" id="edit-staff-position" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-staff-contact">Contact</label>
+                        <input type="text" id="edit-staff-contact" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-staff-education">Education</label>
+                        <input type="text" id="edit-staff-education" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-staff-status">Employment Status</label>
+                        <select id="edit-staff-status" name="edit-staff-status" required>
+                            <option value="active">Active</option>
+                            <option value="on_leave">On Leave</option>
+                            <option value="retired">Retired</option>
+                            <option value="dismissed">Dismissed</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="edit-status-date-container" style="display: none;">
+                        <label for="edit-status-date" id="edit-status-date-label">Date</label>
+                        <input type="date" id="edit-status-date">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Staff</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/auth.js"></script>
+ 
+     <!-- Export Format Selection Modal -->
+    <div id="export-format-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-header">
+                <h2>Select Export Format</h2>
+            </div>
+            <div class="export-format-options">
+                <button class="export-option-btn" data-format="excel">
+                    <i class="fas fa-file-excel"></i>
+                    <span>Excel (.xlsx)</span>
+                </button>
+                <button class="export-option-btn" data-format="word">
+                    <i class="fas fa-file-word"></i>
+                    <span>MS Word (.docx)</span>
+                </button>
+                <button class="export-option-btn" data-format="pdf">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>PDF (.pdf)</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/magisterial-dashboard.js"></script>
+</body>
+</html>

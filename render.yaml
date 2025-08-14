@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: judiciary-staff-backend
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: BCRYPT_SALT_ROUNDS
+        value: 12
+      - key: MONGODB_URI
+        fromDatabase:
+          name: judiciary-staff-db
+          property: connectionString
+      - key: FRONTEND_URL
+        value: https://judiciary-staff-frontend.netlify.app
+
+databases:
+  - name: judiciary-staff-db
+    databaseName: judiciary-staff-management
+    user: judiciary-admin
+    plan: free
