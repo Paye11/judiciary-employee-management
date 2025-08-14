@@ -3,6 +3,7 @@ services:
     name: judiciary-staff-backend
     env: node
     plan: free
+    branch: main
     buildCommand: cd backend && npm install
     startCommand: cd backend && npm start
     healthCheckPath: /api/health
