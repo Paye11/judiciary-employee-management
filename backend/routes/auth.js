@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
-const { users } = require('../data/sampleData');
+const { User } = require('../models');
 const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();
@@ -26,7 +26,7 @@ router.post('/login', [
     const { username, password } = req.body;
 
     // Find user by username
-    const user = users.find(u => u.username === username);
+    const user = await User.findOne({ username: username, isActive: true });
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -34,17 +34,8 @@ router.post('/login', [
       });
     }
 
-    // For demo purposes, we'll check plain text passwords
-    // In production, use bcrypt.compare(password, user.password)
-    let isValidPassword = false;
-    
-    // Check if password is hashed or plain text
-    if (user.password.startsWith('$2a$')) {
-      isValidPassword = await bcrypt.compare(password, user.password);
-    } else {
-      // For backward compatibility with existing plain text passwords
-      isValidPassword = password === user.password;
-    }
+    // Check password using bcrypt
+    const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (!isValidPassword) {
       return res.status(401).json({
