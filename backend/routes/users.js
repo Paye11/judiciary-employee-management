@@ -1,42 +1,43 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const { body, validationResult, param } = require('express-validator');
-const { users, getNextUserId } = require('../data/sampleData');
+const { User } = require('../models');
 const { authenticateToken, requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
 
 // Get all users (admin only)
-router.get('/', authenticateToken, requireAdmin, (req, res) => {
+router.get('/', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { role, search } = req.query;
-    let filteredUsers = [...users];
+    let query = {};
 
     // Filter by role
     if (role) {
-      filteredUsers = filteredUsers.filter(user => user.role === role);
+      query.role = role;
     }
 
-    // Search by username, name, or email
+    // Search by username, firstName, lastName, or email
     if (search) {
-      const searchLower = search.toLowerCase();
-      filteredUsers = filteredUsers.filter(user => 
-        user.username.toLowerCase().includes(searchLower) ||
-        user.name.toLowerCase().includes(searchLower) ||
-        (user.email && user.email.toLowerCase().includes(searchLower))
-      );
+      const searchRegex = new RegExp(search, 'i');
+      query.$or = [
+        { username: searchRegex },
+        { firstName: searchRegex },
+        { lastName: searchRegex },
+        { email: searchRegex }
+      ];
     }
 
-    // Remove passwords from response
-    const usersWithoutPasswords = filteredUsers.map(user => {
-      const { password, ...userWithoutPassword } = user;
-      return userWithoutPassword;
-    });
+    const users = await User.find(query)
+      .select('-password')
+      .populate('courtId')
+      .populate('circuitCourtId')
+      .sort({ createdAt: -1 });
 
     res.json({
       success: true,
-      data: usersWithoutPasswords,
-      total: usersWithoutPasswords.length
+      data: users,
+      total: users.length
     });
   } catch (error) {
     console.error('Get users error:', error);
