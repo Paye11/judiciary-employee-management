@@ -132,8 +132,7 @@ router.post('/circuit', [
   body('name').notEmpty().withMessage('Court name is required'),
   body('location').notEmpty().withMessage('Location is required'),
   body('username').notEmpty().withMessage('Username is required'),
-  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
-  body('email').isEmail().withMessage('Invalid email address')
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -145,7 +144,7 @@ router.post('/circuit', [
       });
     }
 
-    const { name, location, username, password, email, adminName, address, phone, website, jurisdiction, chiefJudge, description } = req.body;
+    const { name, location, username, password, adminName, address, phone, website, jurisdiction, chiefJudge, description } = req.body;
 
     // Check if username already exists
     const existingUser = await User.findOne({ username });
@@ -156,20 +155,12 @@ router.post('/circuit', [
       });
     }
 
-    // Check if email already exists
-    const existingEmail = await User.findOne({ email });
-    if (existingEmail) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email already exists'
-      });
-    }
+
 
     // Create new user for circuit court administrator
     const newUser = new User({
       username,
       password,
-      email,
       name: adminName || `${name} Administrator`,
       role: 'circuit',
       createdBy: req.user.userId
@@ -183,7 +174,6 @@ router.post('/circuit', [
       location,
       address: address || {},
       phone,
-      email: email,
       website,
       jurisdiction,
       chiefJudge,
@@ -350,8 +340,7 @@ router.post('/circuit/:circuitId/magisterial', [
   param('circuitId').isInt({ min: 1 }).withMessage('Invalid circuit court ID'),
   body('name').notEmpty().withMessage('Court name is required'),
   body('username').notEmpty().withMessage('Username is required'),
-  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
-  body('email').isEmail().withMessage('Invalid email address')
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -364,7 +353,7 @@ router.post('/circuit/:circuitId/magisterial', [
     }
 
     const circuitId = parseInt(req.params.circuitId);
-    const { name, username, password, email } = req.body;
+    const { name, username, password } = req.body;
 
     const circuitIndex = circuitCourts.findIndex(c => c.id === circuitId);
     if (circuitIndex === -1) {
@@ -393,14 +382,7 @@ router.post('/circuit/:circuitId/magisterial', [
       });
     }
 
-    // Check if email already exists
-    const existingEmail = users.find(u => u.email === email);
-    if (existingEmail) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email already exists'
-      });
-    }
+
 
     // Hash password
     const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS) || 12;
@@ -416,7 +398,6 @@ router.post('/circuit/:circuitId/magisterial', [
       password: hashedPassword,
       role: 'magisterial',
       name,
-      email,
       circuitCourtId: circuitId,
       courtId: newCourtId,
       createdAt: new Date()
