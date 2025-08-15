@@ -1094,43 +1094,12 @@ function printTotalStaff() {
     printWindow.print();
 }
 
-// Get modal elements
-const addStaffModal = document.getElementById('add-staff-modal');
-const addStaffBtn = document.getElementById('add-staff-btn');
-const addStaffForm = document.getElementById('add-staff-form');
-const staffCourtTypeSelect = document.getElementById('staff-court-type');
-const staffCourtSelect = document.getElementById('staff-court');
+// Modal elements will be initialized in DOMContentLoaded
+let addStaffModal, addStaffBtn, addStaffForm, staffCourtTypeSelect, staffCourtSelect;
+let editStaffModal, editStaffForm, editStaffCourtTypeSelect, editStaffCourtSelect, cancelEditBtn;
+let addMagisterialCourtModal, addMagisterialCourtBtn, addMagisterialCourtForm, magisterialCourtCircuitSelect;
 
-const editStaffModal = document.getElementById('edit-staff-modal');
-const editStaffForm = document.getElementById('edit-staff-form');
-const editStaffCourtTypeSelect = document.getElementById('edit-staff-court-type');
-const editStaffCourtSelect = document.getElementById('edit-staff-court');
-const cancelEditBtn = document.getElementById('cancel-edit-btn');
-
-const addMagisterialCourtModal = document.getElementById('add-magisterial-court-modal');
-const addMagisterialCourtBtn = document.getElementById('add-magisterial-court-btn');
-const addMagisterialCourtForm = document.getElementById('add-magisterial-court-form');
-const magisterialCourtCircuitSelect = document.getElementById('magisterial-court-circuit');
-
-// Open add staff modal
-addStaffBtn.addEventListener('click', function() {
-    populateCourtSelects();
-    addStaffModal.style.display = 'block';
-});
-
-// Open add magisterial court modal
-addMagisterialCourtBtn.addEventListener('click', function() {
-    populateCircuitCourts();
-    addMagisterialCourtModal.style.display = 'block';
-});
-
-// Close modals when clicking the close button
-document.querySelectorAll('.close').forEach(closeBtn => {
-    closeBtn.addEventListener('click', function() {
-        addStaffModal.style.display = 'none';
-        addMagisterialCourtModal.style.display = 'none';
-    });
-});
+// Event listeners moved to DOMContentLoaded
 
 // Close modals when clicking outside
 window.addEventListener('click', function(event) {
@@ -1141,123 +1110,9 @@ window.addEventListener('click', function(event) {
     }
 });
 
-// Handle court type change for staff form
-staffCourtTypeSelect.addEventListener('change', function() {
-    const courtType = this.value;
-    staffCourtSelect.innerHTML = '<option value="">Select Court</option>';
-    
-    if (courtType === 'circuit') {
-        const circuitCourts = JSON.parse(localStorage.getItem('circuitCourts')) || [];
-        circuitCourts.forEach(court => {
-            const option = document.createElement('option');
-            option.value = court.id;
-            option.textContent = court.name;
-            staffCourtSelect.appendChild(option);
-        });
-    } else if (courtType === 'magisterial') {
-        const circuitCourts = JSON.parse(localStorage.getItem('circuitCourts')) || [];
-        circuitCourts.forEach(circuit => {
-            if (circuit.magisterialCourts && circuit.magisterialCourts.length > 0) {
-                circuit.magisterialCourts.forEach(court => {
-                    const option = document.createElement('option');
-                    option.value = court.id;
-                    option.textContent = `${court.name} (${circuit.name})`;
-                    staffCourtSelect.appendChild(option);
-                });
-            }
-        });
-    }
-});
+// Event listeners will be initialized in DOMContentLoaded
 
-// Handle court type change for edit staff form
-editStaffCourtTypeSelect.addEventListener('change', function() {
-    const courtType = this.value;
-    editStaffCourtSelect.innerHTML = '<option value="">Select Court</option>';
-    
-    if (courtType === 'circuit') {
-        const circuitCourts = JSON.parse(localStorage.getItem('circuitCourts')) || [];
-        circuitCourts.forEach(court => {
-            const option = document.createElement('option');
-            option.value = court.id;
-            option.textContent = court.name;
-            editStaffCourtSelect.appendChild(option);
-        });
-    } else if (courtType === 'magisterial') {
-        const circuitCourts = JSON.parse(localStorage.getItem('circuitCourts')) || [];
-        circuitCourts.forEach(circuit => {
-            if (circuit.magisterialCourts && circuit.magisterialCourts.length > 0) {
-                circuit.magisterialCourts.forEach(court => {
-                    const option = document.createElement('option');
-                    option.value = court.id;
-                    option.textContent = `${court.name} (${circuit.name})`;
-                    editStaffCourtSelect.appendChild(option);
-                });
-            }
-        });
-    }
-});
-
-// Event listeners for Edit Staff Modal
-cancelEditBtn.addEventListener('click', () => {
-    editStaffModal.style.display = 'none';
-});
-
-editStaffModal.addEventListener('click', (e) => {
-    if (e.target === editStaffModal) {
-        editStaffModal.style.display = 'none';
-    }
-});
-
-// Handle edit staff form submission
-editStaffForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    const staffId = parseInt(formData.get('edit-staff-id'));
-    const updatedStaffData = {
-        id: staffId,
-        name: formData.get('edit-staff-name'),
-        position: formData.get('edit-staff-position'),
-        courtType: formData.get('edit-staff-court-type'),
-        courtId: parseInt(formData.get('edit-staff-court')),
-        phone: formData.get('edit-staff-phone'),
-        email: formData.get('edit-staff-email'),
-        education: formData.get('edit-staff-education'),
-        employmentStatus: formData.get('edit-staff-employment-status')
-    };
-    
-    // Validate form data
-     if (!updatedStaffData.name || !updatedStaffData.position || !updatedStaffData.courtType || 
-         !updatedStaffData.courtId || !updatedStaffData.education) {
-         alert('Please fill in all required fields.');
-         return;
-     }
-    
-    // Update staff member
-    const { id, ...updatedData } = updatedStaffData;
-    const result = updateStaffMember(staffId, updatedData);
-    
-    if (result.success) {
-        alert('Staff member updated successfully!');
-        editStaffModal.style.display = 'none';
-        // Refresh current page data
-        const activePage = document.querySelector('.page[style*="block"]');
-        if (activePage) {
-            if (activePage.id === 'total-staff-page') {
-                applyStaffFilters();
-            } else if (activePage.id === 'active-staff-page') {
-                loadStaffByStatus('active');
-            } else if (activePage.id === 'retired-staff-page') {
-                loadStaffByStatus('retired');
-            } else if (activePage.id === 'dismissed-staff-page') {
-                loadStaffByStatus('dismissed');
-            }
-        }
-        loadDashboardData(); // Refresh dashboard counts
-    } else {
-        alert('Error updating staff member: ' + result.message);
-    }
-});
+// Form submission handlers moved to DOMContentLoaded
 
 // Populate court selects
 function populateCourtSelects() {
@@ -1278,80 +1133,9 @@ function populateCircuitCourts() {
     });
 }
 
-// Handle add staff form submission
-addStaffForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    const staffData = {
-        name: formData.get('staff-name'),
-        position: formData.get('staff-position'),
-        courtType: formData.get('staff-court-type'),
-        courtId: parseInt(formData.get('staff-court')),
-        phone: formData.get('staff-phone'),
-        email: formData.get('staff-email'),
-        education: formData.get('staff-education'),
-        employmentStatus: formData.get('staff-employment-status')
-    };
-    
-    // Validate form data
-    if (!staffData.name || !staffData.position || !staffData.courtType || 
-        !staffData.courtId || !staffData.education) {
-        alert('Please fill in all required fields.');
-        return;
-    }
-    
-    // Add staff member
-    const result = addStaffMember(staffData);
-    
-    if (result.success) {
-        alert('Staff member added successfully!');
-        addStaffModal.style.display = 'none';
-        addStaffForm.reset();
-        // Refresh current page data
-        const activePage = document.querySelector('.page[style*="block"]');
-        if (activePage && activePage.id === 'total-staff-page') {
-            loadTotalStaff();
-        }
-        loadDashboardData(); // Refresh dashboard counts
-    } else {
-        alert('Error adding staff member: ' + result.message);
-    }
-});
+// Add staff form submission moved to DOMContentLoaded
 
-// Handle add magisterial court form submission
-addMagisterialCourtForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    const courtName = formData.get('magisterial-court-name');
-    const username = formData.get('magisterial-court-username');
-    const password = formData.get('magisterial-court-password');
-    const confirmPassword = formData.get('magisterial-court-confirm-password');
-    const circuitCourtId = formData.get('magisterial-court-circuit');
-    
-    // Validate form data
-    if (!courtName || !username || !password || !confirmPassword || !circuitCourtId) {
-        alert('Please fill in all required fields.');
-        return;
-    }
-    
-    if (password !== confirmPassword) {
-        alert('Passwords do not match.');
-        return;
-    }
-    
-    // Create magisterial court
-    const result = createMagisterialCourtAccount(parseInt(circuitCourtId), courtName, username, password);
-    
-    if (result.success) {
-        alert('Magisterial court created successfully!');
-        addMagisterialCourtModal.style.display = 'none';
-        addMagisterialCourtForm.reset();
-        // Refresh magisterial courts page if active
-        const activePage = document.querySelector('.page[style*="block"]');
-        if (activePage && activePage.id === 'magisterial-courts-page') {
-            loadAllMagisterialCourts();
+// Add magisterial court form submission moved to DOMContentLoaded
         }
         loadDashboardData(); // Refresh dashboard counts
     } else {
@@ -1487,30 +1271,7 @@ function deleteStaff(staffId) {
     }
 }
 
-// Add staff member function
-function addStaffMember(staffData) {
-    try {
-        const allStaff = JSON.parse(localStorage.getItem('staffData')) || [];
-        
-        // Generate new ID
-        const newId = allStaff.length > 0 ? Math.max(...allStaff.map(s => s.id)) + 1 : 1;
-        
-        // Create new staff member
-        const newStaff = {
-            ...staffData,
-            id: newId,
-            contact: staffData.phone, // Map phone to contact for compatibility
-            createdAt: new Date().toISOString()
-        };
-        
-        allStaff.push(newStaff);
-        localStorage.setItem('staffData', JSON.stringify(allStaff));
-        
-        return { success: true, message: 'Staff member added successfully' };
-    } catch (error) {
-        return { success: false, message: 'Error adding staff member: ' + error.message };
-    }
-}
+// Note: addStaffMember function is now defined in auth.js and uses API calls
 
 // Show export format modal
 function showExportFormatModal(exportType) {
@@ -2201,6 +1962,253 @@ function initializeMobileMenu() {
 
 // Initialize dashboard when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize DOM elements
+    addStaffModal = document.getElementById('add-staff-modal');
+    addStaffBtn = document.getElementById('add-staff-btn');
+    addStaffForm = document.getElementById('add-staff-form');
+    staffCourtTypeSelect = document.getElementById('staff-court-type');
+    staffCourtSelect = document.getElementById('staff-court');
+    
+    editStaffModal = document.getElementById('edit-staff-modal');
+    editStaffForm = document.getElementById('edit-staff-form');
+    editStaffCourtTypeSelect = document.getElementById('edit-staff-court-type');
+    editStaffCourtSelect = document.getElementById('edit-staff-court');
+    cancelEditBtn = document.getElementById('cancel-edit-btn');
+    
+    addMagisterialCourtModal = document.getElementById('add-magisterial-court-modal');
+    addMagisterialCourtBtn = document.getElementById('add-magisterial-court-btn');
+    addMagisterialCourtForm = document.getElementById('add-magisterial-court-form');
+    magisterialCourtCircuitSelect = document.getElementById('magisterial-court-circuit');
+    
+    // Initialize event listeners only if elements exist
+    if (staffCourtTypeSelect) {
+        staffCourtTypeSelect.addEventListener('change', function() {
+            const courtType = this.value;
+            staffCourtSelect.innerHTML = '<option value="">Select Court</option>';
+            
+            if (courtType === 'circuit') {
+                const circuitCourts = JSON.parse(localStorage.getItem('circuitCourts')) || [];
+                circuitCourts.forEach(court => {
+                    const option = document.createElement('option');
+                    option.value = court.id;
+                    option.textContent = court.name;
+                    staffCourtSelect.appendChild(option);
+                });
+            } else if (courtType === 'magisterial') {
+                const circuitCourts = JSON.parse(localStorage.getItem('circuitCourts')) || [];
+                circuitCourts.forEach(circuit => {
+                    if (circuit.magisterialCourts && circuit.magisterialCourts.length > 0) {
+                        circuit.magisterialCourts.forEach(magCourt => {
+                            const option = document.createElement('option');
+                            option.value = magCourt.id;
+                            option.textContent = `${magCourt.name} (${circuit.name})`;
+                            staffCourtSelect.appendChild(option);
+                        });
+                    }
+                });
+            }
+        });
+    }
+    
+    if (editStaffCourtTypeSelect) {
+        editStaffCourtTypeSelect.addEventListener('change', function() {
+            const courtType = this.value;
+            editStaffCourtSelect.innerHTML = '<option value="">Select Court</option>';
+            
+            if (courtType === 'circuit') {
+                const circuitCourts = JSON.parse(localStorage.getItem('circuitCourts')) || [];
+                circuitCourts.forEach(court => {
+                    const option = document.createElement('option');
+                    option.value = court.id;
+                    option.textContent = court.name;
+                    editStaffCourtSelect.appendChild(option);
+                });
+            } else if (courtType === 'magisterial') {
+                const circuitCourts = JSON.parse(localStorage.getItem('circuitCourts')) || [];
+                circuitCourts.forEach(circuit => {
+                    if (circuit.magisterialCourts && circuit.magisterialCourts.length > 0) {
+                        circuit.magisterialCourts.forEach(magCourt => {
+                            const option = document.createElement('option');
+                            option.value = magCourt.id;
+                            option.textContent = `${magCourt.name} (${circuit.name})`;
+                            editStaffCourtSelect.appendChild(option);
+                        });
+                    }
+                });
+            }
+        });
+    }
+    
+    // Initialize other event listeners
+    if (addStaffBtn) {
+        addStaffBtn.addEventListener('click', function() {
+            populateCourtSelects();
+            addStaffModal.style.display = 'block';
+        });
+    }
+    
+    if (addMagisterialCourtBtn) {
+        addMagisterialCourtBtn.addEventListener('click', function() {
+            populateCircuitCourts();
+            addMagisterialCourtModal.style.display = 'block';
+        });
+    }
+    
+    if (cancelEditBtn) {
+        cancelEditBtn.addEventListener('click', () => {
+            editStaffModal.style.display = 'none';
+        });
+    }
+    
+    if (editStaffModal) {
+        editStaffModal.addEventListener('click', (e) => {
+            if (e.target === editStaffModal) {
+                editStaffModal.style.display = 'none';
+            }
+        });
+    }
+    
+    // Close modals when clicking the close button
+     document.querySelectorAll('.close').forEach(closeBtn => {
+         closeBtn.addEventListener('click', function() {
+             if (addStaffModal) addStaffModal.style.display = 'none';
+             if (addMagisterialCourtModal) addMagisterialCourtModal.style.display = 'none';
+         });
+     });
+     
+     // Form submission event listeners
+      if (editStaffForm) {
+          editStaffForm.addEventListener('submit', async function(e) {
+              e.preventDefault();
+              
+              const formData = new FormData(this);
+              const staffId = parseInt(formData.get('edit-staff-id'));
+              const updatedStaffData = {
+                  id: staffId,
+                  name: formData.get('edit-staff-name'),
+                  position: formData.get('edit-staff-position'),
+                  courtType: formData.get('edit-staff-court-type'),
+                  courtId: parseInt(formData.get('edit-staff-court')),
+                  phone: formData.get('edit-staff-phone'),
+                  email: formData.get('edit-staff-email'),
+                  education: formData.get('edit-staff-education'),
+                  employmentStatus: formData.get('edit-staff-employment-status')
+              };
+              
+              // Validate form data
+              if (!updatedStaffData.name || !updatedStaffData.position || !updatedStaffData.courtType || 
+                  !updatedStaffData.courtId || !updatedStaffData.education) {
+                  alert('Please fill in all required fields.');
+                  return;
+              }
+              
+              // Update staff member
+              const { id, ...updatedData } = updatedStaffData;
+              try {
+                  const result = await updateStaffMember(staffId, updatedData);
+                  alert('Staff member updated successfully!');
+                  editStaffModal.style.display = 'none';
+                  // Refresh current page data
+                  const activePage = document.querySelector('.page[style*="block"]');
+                  if (activePage) {
+                      if (activePage.id === 'total-staff-page') {
+                          applyStaffFilters();
+                      } else if (activePage.id === 'active-staff-page') {
+                          loadStaffByStatus('active');
+                      } else if (activePage.id === 'retired-staff-page') {
+                          loadStaffByStatus('retired');
+                      } else if (activePage.id === 'dismissed-staff-page') {
+                          loadStaffByStatus('dismissed');
+                      }
+                  }
+                  loadDashboardData(); // Refresh dashboard counts
+              } catch (error) {
+                  alert('Error updating staff member: ' + error.message);
+              }
+          });
+      }
+      
+      if (addStaffForm) {
+          addStaffForm.addEventListener('submit', function(e) {
+              e.preventDefault();
+              
+              const formData = new FormData(this);
+              const staffData = {
+                  name: formData.get('staff-name'),
+                  position: formData.get('staff-position'),
+                  courtType: formData.get('staff-court-type'),
+                  courtId: parseInt(formData.get('staff-court')),
+                  phone: formData.get('staff-phone'),
+                  email: formData.get('staff-email'),
+                  education: formData.get('staff-education'),
+                  employmentStatus: formData.get('staff-employment-status')
+              };
+              
+              // Validate form data
+              if (!staffData.name || !staffData.position || !staffData.courtType || 
+                  !staffData.courtId || !staffData.education) {
+                  alert('Please fill in all required fields.');
+                  return;
+              }
+              
+              // Add staff member
+              try {
+                  const result = await addStaffMember(staffData);
+                  alert('Staff member added successfully!');
+                  addStaffModal.style.display = 'none';
+                  addStaffForm.reset();
+                  // Refresh current page data
+                  const activePage = document.querySelector('.page[style*="block"]');
+                  if (activePage && activePage.id === 'total-staff-page') {
+                      loadTotalStaff();
+                  }
+                  loadDashboardData(); // Refresh dashboard counts
+              } catch (error) {
+                  alert('Error adding staff member: ' + error.message);
+              }
+          });
+      }
+      
+      if (addMagisterialCourtForm) {
+          addMagisterialCourtForm.addEventListener('submit', async function(e) {
+              e.preventDefault();
+              
+              const formData = new FormData(this);
+              const courtName = formData.get('magisterial-court-name');
+              const username = formData.get('magisterial-court-username');
+              const password = formData.get('magisterial-court-password');
+              const confirmPassword = formData.get('magisterial-court-confirm-password');
+              const circuitCourtId = formData.get('magisterial-court-circuit');
+              
+              // Validate form data
+              if (!courtName || !username || !password || !confirmPassword || !circuitCourtId) {
+                  alert('Please fill in all required fields.');
+                  return;
+              }
+              
+              if (password !== confirmPassword) {
+                  alert('Passwords do not match.');
+                  return;
+              }
+              
+              // Create magisterial court
+              try {
+                  const result = await createMagisterialCourtAccount(parseInt(circuitCourtId), { name: courtName, username, password });
+                  alert('Magisterial court created successfully!');
+                  addMagisterialCourtModal.style.display = 'none';
+                  addMagisterialCourtForm.reset();
+                  // Refresh magisterial courts page if active
+                  const activePage = document.querySelector('.page[style*="block"]');
+                  if (activePage && activePage.id === 'magisterial-courts-page') {
+                      loadAllMagisterialCourts();
+                  }
+                  loadDashboardData(); // Refresh dashboard counts
+              } catch (error) {
+                  alert('Error creating magisterial court: ' + error.message);
+              }
+          });
+      }
+    
     loadDashboardData();
     initializeMobileMenu();
 });
