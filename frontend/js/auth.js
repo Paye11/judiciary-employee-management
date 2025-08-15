@@ -129,8 +129,10 @@ function resetSampleData() {
 // Initialize on page load
 initializeLocalStorage();
 
-// Handle login form submission
-document.getElementById('loginForm').addEventListener('submit', async function(e) {
+// Handle login form submission (only if loginForm exists)
+const loginForm = document.getElementById('loginForm');
+if (loginForm) {
+    loginForm.addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const username = document.getElementById('username').value;
@@ -177,7 +179,8 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         submitButton.disabled = false;
         submitButton.textContent = 'Login';
     }
-});
+    });
+}
 
 // Function to check if user is logged in
 async function checkAuth() {

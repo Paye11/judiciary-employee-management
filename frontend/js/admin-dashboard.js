@@ -1136,12 +1136,6 @@ function populateCircuitCourts() {
 // Add staff form submission moved to DOMContentLoaded
 
 // Add magisterial court form submission moved to DOMContentLoaded
-        }
-        loadDashboardData(); // Refresh dashboard counts
-    } else {
-        alert('Error creating magisterial court: ' + result.message);
-    }
-});
 
 // Filter functionality
 const courtTypeFilter = document.getElementById('court-type-filter');
