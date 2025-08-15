@@ -13,6 +13,7 @@ const { connectDB, checkDBHealth, seedDatabase } = require('./config/database');
 const authRoutes = require('./routes/auth');
 const courtRoutes = require('./routes/courts');
 const staffRoutes = require('./routes/staff');
+const userRoutes = require('./routes/users');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
