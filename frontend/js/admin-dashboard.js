@@ -554,6 +554,8 @@ document.getElementById('add-circuit-court-form').addEventListener('submit', asy
     e.preventDefault();
     
     const courtName = document.getElementById('court-name').value;
+    const location = document.getElementById('court-location').value;
+    const email = document.getElementById('court-email').value;
     const username = document.getElementById('court-username').value;
     const password = document.getElementById('court-password').value;
     const confirmPassword = document.getElementById('court-confirm-password').value;
@@ -564,10 +566,18 @@ document.getElementById('add-circuit-court-form').addEventListener('submit', asy
         return;
     }
     
+    // Validate password length
+    if (password.length < 6) {
+        alert('Password must be at least 6 characters long');
+        return;
+    }
+    
     try {
         // Create circuit court account
         const courtData = {
             name: courtName,
+            location: location,
+            email: email,
             username: username,
             password: password
         };
@@ -2180,13 +2190,14 @@ document.addEventListener('DOMContentLoaded', function() {
               
               const formData = new FormData(this);
               const courtName = formData.get('magisterial-court-name');
+              const email = formData.get('magisterial-court-email');
               const username = formData.get('magisterial-court-username');
               const password = formData.get('magisterial-court-password');
               const confirmPassword = formData.get('magisterial-court-confirm-password');
               const circuitCourtId = formData.get('magisterial-court-circuit');
               
               // Validate form data
-              if (!courtName || !username || !password || !confirmPassword || !circuitCourtId) {
+              if (!courtName || !email || !username || !password || !confirmPassword || !circuitCourtId) {
                   alert('Please fill in all required fields.');
                   return;
               }
@@ -2196,9 +2207,15 @@ document.addEventListener('DOMContentLoaded', function() {
                   return;
               }
               
+              // Validate password length
+              if (password.length < 6) {
+                  alert('Password must be at least 6 characters long.');
+                  return;
+              }
+              
               // Create magisterial court
               try {
-                  const result = await createMagisterialCourtAccount(parseInt(circuitCourtId), { name: courtName, username, password });
+                  const result = await createMagisterialCourtAccount(parseInt(circuitCourtId), { name: courtName, email, username, password });
                   alert('Magisterial court created successfully!');
                   addMagisterialCourtModal.style.display = 'none';
                   addMagisterialCourtForm.reset();

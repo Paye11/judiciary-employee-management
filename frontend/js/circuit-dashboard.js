@@ -919,6 +919,7 @@ document.getElementById('add-magisterial-court-form').addEventListener('submit',
     e.preventDefault();
     
     const courtName = document.getElementById('magisterial-court-name').value;
+    const email = document.getElementById('magisterial-court-email').value;
     const username = document.getElementById('magisterial-court-username').value;
     const password = document.getElementById('magisterial-court-password').value;
     const confirmPassword = document.getElementById('magisterial-court-confirm-password').value;
@@ -926,6 +927,12 @@ document.getElementById('add-magisterial-court-form').addEventListener('submit',
     // Validate passwords match
     if (password !== confirmPassword) {
         alert('Passwords do not match');
+        return;
+    }
+    
+    // Validate password length
+    if (password.length < 6) {
+        alert('Password must be at least 6 characters long');
         return;
     }
     
@@ -940,6 +947,7 @@ document.getElementById('add-magisterial-court-form').addEventListener('submit',
         // Create magisterial court account
         const courtData = {
             name: courtName,
+            email: email,
             username: username,
             password: password
         };
