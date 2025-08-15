@@ -550,7 +550,7 @@ window.addEventListener('click', function(event) {
 });
 
 // Handle add circuit court form submission
-document.getElementById('add-circuit-court-form').addEventListener('submit', function(e) {
+document.getElementById('add-circuit-court-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const courtName = document.getElementById('court-name').value;
@@ -564,23 +564,34 @@ document.getElementById('add-circuit-court-form').addEventListener('submit', fun
         return;
     }
     
-    // Create circuit court account
-    const result = createCircuitCourtAccount(courtName, username, password);
-    
-    if (result.success) {
-        alert(result.message);
-        addCircuitCourtModal.style.display = 'none';
+    try {
+        // Create circuit court account
+        const courtData = {
+            name: courtName,
+            username: username,
+            password: password
+        };
         
-        // Reset form
-        this.reset();
+        const result = await createCircuitCourtAccount(courtData);
         
-        // Reload circuit courts
-        loadCircuitCourts();
-        
-        // Reload dashboard data
-        loadDashboardData();
-    } else {
-        alert(result.message);
+        if (result.success) {
+            alert(result.message || 'Circuit court created successfully!');
+            addCircuitCourtModal.style.display = 'none';
+            
+            // Reset form
+            this.reset();
+            
+            // Reload circuit courts
+            loadCircuitCourts();
+            
+            // Reload dashboard data
+            loadDashboardData();
+        } else {
+            alert(result.message || 'Failed to create circuit court');
+        }
+    } catch (error) {
+        console.error('Error creating circuit court:', error);
+        alert(error.message || 'An error occurred while creating the circuit court');
     }
 });
 

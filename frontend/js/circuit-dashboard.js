@@ -915,7 +915,7 @@ document.getElementById('add-staff-form').addEventListener('submit', function(e)
 });
 
 // Handle add magisterial court form submission
-document.getElementById('add-magisterial-court-form').addEventListener('submit', function(e) {
+document.getElementById('add-magisterial-court-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const courtName = document.getElementById('magisterial-court-name').value;
@@ -936,23 +936,34 @@ document.getElementById('add-magisterial-court-form').addEventListener('submit',
         return;
     }
     
-    // Create magisterial court account
-    const result = createMagisterialCourtAccount(circuitCourtId, courtName, username, password);
-    
-    if (result.success) {
-        alert(result.message);
-        addMagisterialCourtModal.style.display = 'none';
+    try {
+        // Create magisterial court account
+        const courtData = {
+            name: courtName,
+            username: username,
+            password: password
+        };
         
-        // Reset form
-        this.reset();
+        const result = await createMagisterialCourtAccount(circuitCourtId, courtData);
         
-        // Reload magisterial courts
-        loadMagisterialCourts();
-        
-        // Reload dashboard data
-        loadDashboardData();
-    } else {
-        alert(result.message);
+        if (result.success) {
+            alert(result.message || 'Magisterial court created successfully!');
+            addMagisterialCourtModal.style.display = 'none';
+            
+            // Reset form
+            this.reset();
+            
+            // Reload magisterial courts
+            loadMagisterialCourts();
+            
+            // Reload dashboard data
+            loadDashboardData();
+        } else {
+            alert(result.message || 'Failed to create magisterial court');
+        }
+    } catch (error) {
+        console.error('Error creating magisterial court:', error);
+        alert(error.message || 'An error occurred while creating the magisterial court');
     }
 });
 
