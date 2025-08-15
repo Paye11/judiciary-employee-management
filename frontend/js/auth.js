@@ -6,7 +6,7 @@ const API_BASE_URL = (() => {
         return 'http://localhost:3000/api';
     }
     // For deployed environments, use the Render backend URL
-    return 'https://judiciary-staff-backend.onrender.com/api';
+    return 'https://judiciary-employee-backend.onrender.com/api';
 })();
 
 // API Helper Functions
