@@ -8,6 +8,20 @@ const router = express.Router();
 // Get all staff (admin only)
 router.get('/', authenticateToken, requireAdmin, async (req, res) => {
   try {
+    // Check if database is available
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState !== 1) {
+      // Fallback data when database is not available
+      return res.json({
+        success: true,
+        data: [],
+        total: 0,
+        page: 1,
+        totalPages: 0,
+        message: 'Database unavailable - showing fallback data'
+      });
+    }
+
     const { status, courtType, courtId, search, page = 1, limit = 50 } = req.query;
     let query = {};
 

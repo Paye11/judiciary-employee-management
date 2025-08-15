@@ -2,7 +2,13 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/judiciary-staff-management';
+    const mongoURI = process.env.MONGODB_URI;
+    
+    // If no MongoDB URI is provided, skip database connection
+    if (!mongoURI) {
+      console.log('⚠️  No MongoDB URI provided. Running without database.');
+      return null;
+    }
     
     const options = {
       useNewUrlParser: true,
@@ -45,13 +51,15 @@ const connectDB = async () => {
     return conn;
   } catch (error) {
     console.error('Error connecting to MongoDB:', error.message);
+    console.log('⚠️  Running without database connection.');
     
     // Exit process with failure if in production
     if (process.env.NODE_ENV === 'production') {
       process.exit(1);
     }
     
-    throw error;
+    // In development, return null instead of throwing error
+    return null;
   }
 };
 

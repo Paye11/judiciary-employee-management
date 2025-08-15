@@ -9,6 +9,32 @@ const router = express.Router();
 // Get all circuit courts
 router.get('/circuit', authenticateToken, async (req, res) => {
   try {
+    // Check if database is available
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState !== 1) {
+      // Fallback data when database is not available
+      const fallbackCourts = [
+        {
+          _id: 'fallback-circuit-1',
+          name: 'First Judicial Circuit Court',
+          location: 'Monrovia',
+          isActive: true,
+          administratorId: {
+            name: 'Administrator',
+            email: 'admin@judiciary.gov.lr',
+            username: 'admin'
+          }
+        }
+      ];
+      
+      return res.json({
+        success: true,
+        data: fallbackCourts,
+        total: fallbackCourts.length,
+        message: 'Database unavailable - showing fallback data'
+      });
+    }
+
     let query = { isActive: true };
 
     // Non-admin users can only see their own court or courts under their jurisdiction

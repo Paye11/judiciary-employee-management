@@ -1,13 +1,4 @@
 // Authentication and User Management
-// API Configuration
-const API_BASE_URL = (() => {
-    // Check if we're in a deployed environment
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        return 'http://localhost:3000/api';
-    }
-    // For deployed environments, use the Render backend URL
-    return 'https://judiciary-employee-backend.onrender.com/api';
-})();
 
 // API Helper Functions
 function getAuthHeaders() {

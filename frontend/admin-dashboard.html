@@ -132,6 +132,33 @@
                     </div>
                 </div>
 
+                <div class="tables">
+                    <div class="recent-updates">
+                        <div class="heading">
+                            <h3>Recent Updates</h3>
+                            <button class="btn btn-primary" id="print-staff-btn">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                            <button class="btn btn-success" id="export-staff-btn">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Position</th>
+                                    <th>Court</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-updates-body">
+                                <!-- Recent updates will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
             </div>
 
@@ -666,10 +693,6 @@
             </form>
         </div>
     </div>
-
-    <script src="js/auth.js"></script>
- 
-     <!-- Export Format Selection Modal -->
     <div id="export-format-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -693,7 +716,8 @@
         </div>
     </div>
 
-    <script src="js/auth.js"></script>
-    <script src="js/admin-dashboard.js"></script>
+    <script src="js/config.js" defer></script>
+    <script src="js/auth.js" defer></script>
+    <script src="js/admin-dashboard.js" defer></script>
 </body>
 </html>

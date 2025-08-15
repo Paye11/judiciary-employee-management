@@ -2123,7 +2123,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       
       if (addStaffForm) {
-          addStaffForm.addEventListener('submit', function(e) {
+          addStaffForm.addEventListener('submit', async function(e) {
               e.preventDefault();
               
               const formData = new FormData(this);
